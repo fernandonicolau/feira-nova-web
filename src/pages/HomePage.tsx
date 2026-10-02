@@ -1,57 +1,33 @@
-import { useEffect, useState } from "react";
+import { CloudCheck, CloudSlash } from "@phosphor-icons/react";
+import { useQuery } from "@tanstack/react-query";
+import { NewBatchForm } from "../components/NewBatchForm";
+import { Card } from "../components/ui/Card";
 import { env } from "../lib/env";
-import { getApiHealth } from "../services/health";
-
-type ApiState = "checking" | "online" | "offline";
+import { getApiHealth, healthQueryKey } from "../services/health";
 
 export function HomePage() {
-  const [apiState, setApiState] = useState<ApiState>("checking");
-
-  useEffect(() => {
-    const controller = new AbortController();
-    getApiHealth(controller.signal)
-      .then(() => setApiState("online"))
-      .catch(() => setApiState("offline"));
-    return () => controller.abort();
-  }, []);
-
+  const health = useQuery({ queryKey: healthQueryKey, queryFn: ({ signal }) => getApiHealth(signal) });
   return (
-    <section className="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[1.3fr_0.7fr] lg:py-24">
-      <div>
-        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">
-          Operação de hortifruti
-        </p>
-        <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-balance sm:text-6xl">
-          Pedidos organizados, mapas prontos para trabalhar.
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-          A nova interface do Feira Nova está sendo preparada para receber arquivos e entradas manuais sem duplicar as regras do motor de processamento.
-        </p>
-      </div>
-
-      <aside className="self-start rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/50">
-        <p className="text-sm font-medium text-slate-500">Conexão com a API</p>
-        <div className="mt-3 flex items-center gap-3">
-          <span
-            aria-hidden="true"
-            className={`size-3 rounded-full ${
-              apiState === "online"
-                ? "bg-emerald-500"
-                : apiState === "offline"
-                  ? "bg-rose-500"
-                  : "animate-pulse bg-amber-400"
-            }`}
-          />
-          <strong className="text-lg">
-            {apiState === "online"
-              ? "API disponível"
-              : apiState === "offline"
-                ? "API indisponível"
-                : "Verificando…"}
-          </strong>
+    <main className="mx-auto max-w-6xl px-5 py-12 sm:px-8 lg:py-20">
+      <section className="grid items-start gap-10 lg:grid-cols-[0.78fr_1.22fr]">
+        <div className="lg:sticky lg:top-8">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-primary">Operação de hortifruti</p>
+          <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-balance sm:text-5xl">Transforme pedidos em mapas prontos para trabalhar.</h1>
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">Envie uma entrada manual para o mesmo motor que organiza os arquivos da operação, com validação antes do processamento.</p>
+          <Card className="mt-8 p-5">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Conexão com a API</p>
+            <div className="mt-2 flex items-center gap-2">
+              {health.isSuccess ? <CloudCheck aria-hidden className="text-success" size={22} weight="fill" /> : <CloudSlash aria-hidden className={health.isError ? "text-error" : "animate-pulse text-warning"} size={22} />}
+              <strong>{health.isSuccess ? "API disponível" : health.isError ? "API indisponível" : "Verificando…"}</strong>
+            </div>
+            <p className="mt-2 break-all text-xs text-muted-foreground">{env.apiUrl}</p>
+          </Card>
         </div>
-        <p className="mt-3 break-all text-sm text-slate-500">{env.apiUrl}</p>
-      </aside>
-    </section>
+        <Card className="p-6 sm:p-8">
+          <div className="mb-7"><p className="text-sm font-semibold text-primary">Novo lote</p><h2 className="mt-1 text-2xl font-bold tracking-tight">Entrada manual</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Identifique a loja e cole os itens exatamente como foram recebidos.</p></div>
+          <NewBatchForm />
+        </Card>
+      </section>
+    </main>
   );
 }

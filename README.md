@@ -16,8 +16,26 @@ Configure `VITE_API_URL` com a origem da API. O valor padrão de desenvolvimento
 
 ```bash
 npm run lint
+npm run typecheck
+npm test
 npm run build
 ```
+
+## Fundação de interface
+
+- tokens semânticos de cor, foco e sombra ficam centralizados em `src/styles.css`;
+- primitivos reutilizáveis ficam em `src/components/ui` e usam `cn()` para composição de classes;
+- formulários não triviais usam React Hook Form com schemas Zod e erros associados aos campos;
+- React Query concentra estado remoto, cache, loading e erro;
+- Vitest e Testing Library validam comportamento e acessibilidade observável.
+
+A tela inicial demonstra a fundação com uma entrada manual real enviada a
+`POST /api/v1/batches/process`. A Web apenas monta o contrato e apresenta o resultado; regras de
+interpretação dos pedidos continuam exclusivamente na API. As cores atuais são tokens provisórios
+da identidade Feira Nova e podem ser alteradas em um único ponto quando o branding definitivo for
+aprovado.
+
+As orientações locais para evoluir e revisar a interface estão em `.agents/README.md`.
 
 ## Docker e Render
 

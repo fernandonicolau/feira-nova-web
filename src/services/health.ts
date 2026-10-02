@@ -4,3 +4,5 @@ import { apiRequest } from "./http-client";
 export function getApiHealth(signal?: AbortSignal): Promise<HealthResponse> {
   return apiRequest<HealthResponse>("/health", { signal });
 }
+
+export const healthQueryKey = ["api-health"] as const;
