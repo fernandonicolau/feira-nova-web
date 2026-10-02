@@ -42,6 +42,12 @@ No Render, crie um Web Service com o `Dockerfile` e configure:
 O build falha quando `VITE_API_URL` não é informado, impedindo uma publicação que use
 o fallback local de desenvolvimento.
 
+### Deploy nativo
+
+O serviço Web no Render acompanha a branch `main`. Um push nessa branch dispara o build e o deploy nativos do Render a partir do `Dockerfile`; `VITE_API_URL` é fornecida como variável do serviço e o Render a traduz para argumento do build Docker. Se o auto-deploy estiver desabilitado, use **Manual Deploy > Deploy latest commit** no painel do Render.
+
+O GitHub apenas hospeda o código. Não é necessário workflow, `RENDER_API_KEY`, deploy hook ou secret do Render no repositório.
+
 ## Estrutura
 
 - `components/`: componentes e shells reutilizáveis;
