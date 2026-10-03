@@ -8,15 +8,14 @@ function renderForm() {
 }
 
 describe("NewBatchForm", () => {
-  it("associa labels aos campos e mostra erros acessíveis", async () => {
+  it("exposes the unified file and manual controls", async () => {
     const user = userEvent.setup();
     renderForm();
     expect(screen.getByLabelText("Nome do lote")).toBeInTheDocument();
-    expect(screen.getByLabelText("Loja de origem")).toBeInTheDocument();
-    expect(screen.getByLabelText("Itens do pedido")).toBeInTheDocument();
-    await user.clear(screen.getByLabelText("Nome do lote"));
-    await user.click(screen.getByRole("button", { name: "Processar pedido" }));
-    expect(await screen.findByText("Informe um nome com pelo menos 3 caracteres.")).toHaveAttribute("role", "alert");
-    expect(screen.getByLabelText("Nome do lote")).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByLabelText("Loja da entrada manual 1")).toBeInTheDocument();
+    expect(screen.getByLabelText("Itens da entrada manual 1")).toBeInTheDocument();
+    expect(screen.getByLabelText(/Solte os arquivos aqui/)).toHaveAttribute("multiple");
+    await user.click(screen.getByRole("button", { name: "Adicionar" }));
+    expect(screen.getByLabelText("Itens da entrada manual 2")).toBeInTheDocument();
   });
 });

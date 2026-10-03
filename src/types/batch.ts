@@ -17,3 +17,9 @@ export interface TextBatchInput {
   store: string;
   text: string;
 }
+
+export interface UnifiedBatchInput {
+  name: string;
+  files: Array<{ id: string; file: File; store: string }>;
+  texts: Array<{ id: string; store: string; text: string }>;
+}
