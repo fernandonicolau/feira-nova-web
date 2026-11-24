@@ -2,7 +2,6 @@ import { CloudCheck, CloudSlash } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { NewBatchForm } from "../components/NewBatchForm";
 import { Card } from "../components/ui/Card";
-import { env } from "../lib/env";
 import { getApiHealth, healthQueryKey } from "../services/health";
 
 export function HomePage() {
@@ -20,7 +19,6 @@ export function HomePage() {
               {health.isSuccess ? <CloudCheck aria-hidden className="text-success" size={22} weight="fill" /> : <CloudSlash aria-hidden className={health.isError ? "text-error" : "animate-pulse text-warning"} size={22} />}
               <strong>{health.isSuccess ? "API disponível" : health.isError ? "API indisponível" : "Verificando…"}</strong>
             </div>
-            <p className="mt-2 break-all text-xs text-muted-foreground">{env.apiUrl}</p>
           </Card>
         </div>
         <Card className="p-6 sm:p-8">

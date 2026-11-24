@@ -39,8 +39,9 @@ As orientações locais para evoluir e revisar a interface estão em `.agents/RE
 
 ## Docker e Render
 
-A URL pública da API é incorporada pelo Vite durante o build. Por isso, o argumento
-`VITE_API_URL` é obrigatório ao construir a imagem de produção:
+A Web encaminha `/api/` para a API pelo Nginx, na mesma origem do navegador. Isso mantém o cookie
+de sessão funcional sem depender de cookies de terceiros. O argumento `VITE_API_URL` configura o
+destino do proxy e é obrigatório ao construir a imagem de produção:
 
 ```bash
 docker build --build-arg VITE_API_URL=https://api.exemplo.com -t feira-nova-web .
@@ -57,8 +58,9 @@ No Render, crie um Web Service com o `Dockerfile` e configure:
 - health check em `/health`;
 - `PORT` fornecida pelo próprio Render, sem valor fixo na configuração do serviço.
 
-O build falha quando `VITE_API_URL` não é informado, impedindo uma publicação que use
-o fallback local de desenvolvimento.
+O build falha quando `VITE_API_URL` não é informado. No navegador, a produção usa URLs relativas;
+o destino da API fica somente no proxy. Em desenvolvimento, `VITE_API_URL` continua apontando
+diretamente para a API local.
 
 ### Deploy nativo
 

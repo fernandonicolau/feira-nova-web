@@ -17,7 +17,7 @@ RUN test -n "$VITE_API_URL" \
 
 FROM nginx:1.29-alpine AS runtime
 ENV PORT=8080
-ENV NGINX_ENVSUBST_FILTER=^(PORT)$
+ENV NGINX_ENVSUBST_FILTER=^(PORT|VITE_API_URL)$
 
 COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html

@@ -18,6 +18,7 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const response = await fetch(`${env.apiUrl}${path}`, {
     ...init,
+    credentials: "include",
     headers: {
       Accept: "application/json",
       ...init.headers,
@@ -42,6 +43,7 @@ export async function apiDownload(
 ): Promise<{ blob: Blob; fileName: string; requestId?: string }> {
   const response = await fetch(`${env.apiUrl}${path}`, {
     ...init,
+    credentials: "include",
     headers: { Accept: "application/zip", ...init.headers },
   });
 
