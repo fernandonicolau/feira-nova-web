@@ -31,7 +31,7 @@ describe("batch API client", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(
-        new Response(new Blob(["zip"]), {
+        new Response(new TextEncoder().encode("zip"), {
           status: 201,
           headers: {
             "content-disposition": 'attachment; filename="feira-nova-batch-1.zip"',
