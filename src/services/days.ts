@@ -2,7 +2,8 @@ import { env } from "../lib/env";
 import { ApiError, apiRequest } from "./http-client";
 
 export interface DayRecord { id: string; day: string; revision: number; submissions_closed: boolean; created_at: string }
-export interface DayEntry { id: string; kind: "file" | "text"; file_name: string | null; source_file_name?: string | null; manual_text: string | null; store: string | null; byte_size: number | null; state: string; upload_id: string | null; created_at: string }
+export interface ColumnLayout { headerRow: number; pairs: Array<{ nameColumn: string; quantityColumn: string }> }
+export interface DayEntry { id: string; kind: "file" | "text"; file_name: string | null; source_file_name?: string | null; manual_text: string | null; store: string | null; detected_store?: string | null; detection_source?: string | null; detection_confidence?: number | null; layout?: ColumnLayout | null; preview?: { itemCount?: number; warnings?: string[]; sampleItems?: Array<{ name: string; quantity: number }> }; review_required?: boolean; byte_size: number | null; state: string; upload_id: string | null; created_at: string }
 export interface DayEvent { id: number; action: string; created_at: string; details: Record<string, unknown> }
 export interface DayView { day: DayRecord; entries: DayEntry[]; events: DayEvent[] }
 export interface UploadResult { entries: DayEntry[]; failures: Array<{ fileName: string; message: string }> }
@@ -11,6 +12,7 @@ export const dayListKey = ["days"] as const;
 export const dayKey = (day: string) => ["days", day] as const;
 
 export function listDays() { return apiRequest<DayRecord[]>("/api/v1/days"); }
+export function listKnownStores() { return apiRequest<string[]>("/api/v1/days/stores"); }
 export function createDay(day: string) { return apiRequest<DayRecord>(`/api/v1/days/${day}`, { method: "PUT" }); }
 export function getDay(day: string) { return apiRequest<DayView>(`/api/v1/days/${day}`); }
 
@@ -31,6 +33,12 @@ export function addDayText(day: string, text: string, clientEntryId: string, sto
 
 export function removeDayEntry(day: string, id: string) {
   return apiRequest<{ removed: true }>(`/api/v1/days/${day}/entries/${id}`, { method: "DELETE" });
+}
+
+export function reviewDayEntry(day: string, id: string, input: { store: string; layout?: ColumnLayout }) {
+  return apiRequest<DayEntry>(`/api/v1/days/${day}/entries/${id}/review`, {
+    method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input),
+  });
 }
 
 export async function downloadDayOriginal(day: string, uploadId: string): Promise<{ blob: Blob; name: string }> {

@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
-import { addDayText, uploadDayFiles } from "./days";
+import { addDayText, reviewDayEntry, uploadDayFiles } from "./days";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -24,4 +24,16 @@ it("sends manual text to the selected day", async () => {
   const [url, request] = fetchMock.mock.calls[0] as [string, RequestInit];
   expect(url).toContain("/api/v1/days/2026-11-24/texts");
   expect(JSON.parse(String(request.body))).toEqual({ text: "ABACATE 5", clientEntryId: "entry-12345678" });
+});
+
+it("sends the corrected store and column mapping to the entry review route", async () => {
+  const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ id: "entry-1" }), { status: 200 }));
+  vi.stubGlobal("fetch", fetchMock);
+  const input = { store: "Cerâmica", layout: { headerRow: 2, pairs: [{ nameColumn: "C", quantityColumn: "D" }] } };
+  await reviewDayEntry("2026-11-24", "entry-1", input);
+  const [url, request] = fetchMock.mock.calls[0] as [string, RequestInit];
+  expect(url).toContain("/api/v1/days/2026-11-24/entries/entry-1/review");
+  expect(request.method).toBe("PATCH");
+  expect(request.credentials).toBe("include");
+  expect(JSON.parse(String(request.body))).toEqual(input);
 });
